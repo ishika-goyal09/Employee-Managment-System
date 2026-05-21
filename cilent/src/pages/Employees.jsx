@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { dummyEmployeeData,DEPARTMENTS } from '../assets/assets'
 import { Plus, Search, X } from 'lucide-react'
 import EmployeeCard from '../componment/EmployeeCard'
-import EmployeeFrom from '../componment/EmployeeFrom'
+import EmployeeForm from '../componment/EmployeeForm'
 
 const Employees = () => {
   const [employees,setEmployees] = useState([])
@@ -20,11 +20,11 @@ const Employees = () => {
     setTimeout(()=>{
       setLoading(false)
     },1000)
-  },[])
+  },[selectedDept])
 
   useEffect(()=>{
 fetchEmployees();
-  },[])
+  },[fetchEmployees])
 
   const filtered = employees.filter((emp)=>`${emp.firstName} ${emp.lasName} ${emp.position}`.toLowerCase().includes(search.toLowerCase()))
   return (
