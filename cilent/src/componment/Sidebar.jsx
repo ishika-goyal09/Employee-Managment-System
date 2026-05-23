@@ -44,7 +44,7 @@ const Sidebar = () => {
       </div>
        </div>
        {/* Close button on mobile */}
-       <button  onClick={()=> setMobileOpen(false)}className="">
+       <button  onClick={()=> setMobileOpen(false)}className="lg:hidden text-white">
         <XIcon size={20}/>
        </button>
     </div>
