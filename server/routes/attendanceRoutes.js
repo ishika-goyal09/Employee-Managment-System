@@ -1,5 +1,5 @@
 import { Router} from "express";
-import { clockInOut, getAttendance } from "../contollers/attendanceController"
+import { clockInOut, getAttendance } from "../controllers/attendanceController.js"
 import { protect } from "../middleware/auth.js"
 
 

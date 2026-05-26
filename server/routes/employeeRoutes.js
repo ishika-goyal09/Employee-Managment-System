@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createEmployees, deleteEmployees, getEmployees, updateEmployees } from "../contollers/employeeContollers.js";
+import { createEmployees, deleteEmployees, getEmployees, updateEmployees } from "../controllers/employeeContollers.js";
 import { protect, protectAdmin } from "../middleware/auth.js";
 
 
@@ -9,4 +9,6 @@ const employeeRouter = Router();
 employeeRouter.get("/", protect, protectAdmin, getEmployees)
 employeeRouter.post("/",protect, protectAdmin,createEmployees)
 employeeRouter.put("/:id",protect, protectAdmin,updateEmployees)
-employeeRouter.delete("/",protect, protectAdmin,deleteEmployees)
+employeeRouter.delete("/:id",protect, protectAdmin,deleteEmployees)
+
+export default employeeRouter;

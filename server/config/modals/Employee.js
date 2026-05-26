@@ -1,9 +1,9 @@
-import { type } from "@testing-library/user-event/dist/cjs/utility/type.js";
 import mongoose from "mongoose";
+import { DEPARTMENTS } from "../../constants/departments.js"; 
 
-const EmployeeSchema = new mongoose.Schema({
+const employeeSchema = new mongoose.Schema({
     userId:{
-        type:mongoose.Schema.Type.ObjectId,
+       type: mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true,
         unique:true

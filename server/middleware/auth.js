@@ -1,5 +1,4 @@
-import { JsonWebTokenError } from "jsonwebtoken";
-
+import jwt from "jsonwebtoken";
 
 export const protect = (req,res,next)=>{
     try{
@@ -8,7 +7,7 @@ export const protect = (req,res,next)=>{
             return res.status(401).json({error:"Unauthorized"});
         }
         const token = authHeader.split(" ")[1];
-        const session = JsonWebTokenError.verify(token,process.env.JWT_SECRET)
+        const session = JWT.verify(token,process.env.JWT_SECRET)
 
         if(!session){
             return res.status(401).json({error:"Unauthorized"})
