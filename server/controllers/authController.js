@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../config/modals/User.js";
+import User from "../modals/User.js";
 import bcrypt from "bcrypt"
 
 

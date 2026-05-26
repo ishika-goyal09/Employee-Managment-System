@@ -1,6 +1,6 @@
-import Employee from "../config/modals/Employee.js";
+import Employee from "../modals/Employee.js";
 import bcrypt from "bcrypt";
-import User from "../config/modals/User.js";
+import User from "../modals/User.js";
 
 // Get employees
 // GET /api/employees
