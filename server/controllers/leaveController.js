@@ -1,5 +1,5 @@
 import leaveApplication from "../modals/LeaveApplication.js";
-import Employee from "../models/Employee.js";
+import Employee from "../modals/Employee.js";
 
 
 // Create leave 
