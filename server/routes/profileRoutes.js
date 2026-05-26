@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protect } from "../middleware/auth.js";
-import { getProfile, updateProfile } from "../contollers/profileController.js";
+import { getProfile, updateProfile } from "../controllers/profileController.js";
 
 
 
