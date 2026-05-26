@@ -1,4 +1,4 @@
-import Employee from "../config/modals/Employee.js";
+import Employee from "../modals/Employee.js";
 
 
 //Get profile

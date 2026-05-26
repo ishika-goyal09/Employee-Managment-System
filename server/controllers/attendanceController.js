@@ -1,5 +1,5 @@
-import Attendance from "../config/modals/Attendance.js";
-import Employee from "../config/modals/Employee.js";
+import Attendance from "../modals/Attendance.js";
+import Employee from "../modals/Employee.js";
 
 //Clock in/out for employee
 //POST/api/attendance
