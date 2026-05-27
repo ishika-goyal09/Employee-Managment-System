@@ -1,5 +1,6 @@
 import leaveApplication from "../modals/LeaveApplication.js";
 import Employee from "../modals/Employee.js";
+import { inngest } from "../inngest/index.js";
 
 
 // Create leave 
@@ -35,6 +36,11 @@ export const createLeave = async (req,res)=>{
         reason,
         status:"PENDING",
        })
+await inngest.send({
+    name:"leave/pending",
+    data:{leaveApplicationId:leave._id,}
+})
+
 return res.json({success:true,data:leave});
         } catch (error){
             return res.status(500).json({error:"Failed"})
