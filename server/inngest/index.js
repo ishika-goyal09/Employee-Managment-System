@@ -16,7 +16,7 @@ const autoCheckOut = inngest.createFunction(
     const {employeeId,attendanceId} = event.data;
 
     // Wait for 9 hours
-    await step.sleepUntill("wait-for-the-9-hours", new Date(new Date().getTime() + 9 *60 *60 *1000));
+    await step.sleepUntil("wait-for-the-9-hours", new Date(new Date().getTime() + 9 *60 *60 *1000));
 
     //get Attendance data
     let attendance = await Attendance.findById(attendanceId)
@@ -44,11 +44,13 @@ const autoCheckOut = inngest.createFunction(
         })
 
         // After 10 hour, mark attendance as checked out with status "LATE"
-        await step.sleepUntill("wait-for-the-1-hour",new Date(new Date().getTime() + 1 *60 *60 *1000)) 
+        await step.sleepUntil("wait-for-the-1-hour",new Date(new Date().getTime() + 1 *60 *60 *1000)) 
 
         attendance = await Attendance.findById(attendanceId)
         if(!attendance?.checkOut){
-            attendance.checkOut = new Date(attendance.checkIn).getTime() + 4 *60*60*1000;
+          attendance.checkOut = new Date(
+         new Date(attendance.checkIn).getTime() + 4 * 60 * 60 * 1000
+         );
             attendance.workingHours= 4;
             attendance.dayType="Half Day";
             attendance.status="LATE";
@@ -66,7 +68,7 @@ const leaveApplicationReminder = inngest.createFunction(
  const {leaveApplicationId} = event.data;
 
     // Wait for 24 hours
-    await step.sleepUntill("wait-for-the-24-hours", new Date(new Date().getTime() + 24 *60 *60 *1000));
+    await step.sleepUntil("wait-for-the-24-hours", new Date(new Date().getTime() + 24 *60 *60 *1000));
 
     const leaveApplication = await leaveApplication.findById(leaveApplicationId)
 
@@ -94,7 +96,11 @@ const leaveApplicationReminder = inngest.createFunction(
 
 // Cron: Check attendance at 11:30 AM IST (06:00 UTC) and email absent employees
 const attendanceReminderCron = inngest.createFunction(
-  { id: "attendance-reminder-cron",triggers:[{ cron:"TZ=Asia/kolkata 30 11 * * *" }]}, // 06:00 UTC = 11:30 AM IST
+//   { id: "attendance-reminder-cron",triggers:[{ cron:"TZ=Asia/kolkata 30 6 * * *" }]}, // 06:00 UTC = 11:30 AM IST
+{ 
+  id: "attendance-reminder-cron",
+  triggers: [{ cron: "0 6 * * *" }]
+}, // 06:00 UTC = 11:30 AM IST
   async ({ step }) => {
 
 // step 1: Get today's date range(IST)
@@ -102,7 +108,10 @@ const attendanceReminderCron = inngest.createFunction(
 const today = await step.run("get-today-date",()=>{
     const startUTC = new Date(new Date().toLocaleDateString("en-CA",{timeZone: "Asia/Kolkata"}) + "T00:00:00 +05:30")
     const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 *1000);
-    return{startUTC:startUTC.toISOString(),endUTC:endUTC.toISOString}
+    return{
+        startUTC:startUTC.toISOString(),endUTC:endUTC.toISOString()
+        
+    }
 
 })
 //Step 2: Get all active, non-deleted employees
@@ -128,8 +137,10 @@ const today = await step.run("get-today-date",()=>{
         // step 4: Get employee IDs who already checked in today
       const checkedInIds = await step.run("get-checked-in-ids",async () => {
             const attendance = await Attendance.find({
-                Date:{ $gte: new Date(today.startUTC)},$lte: new 
-                Date(today.endUTC)
+             date: {
+                $gte: new Date(today.startUTC),
+                $lte: new Date(today.endUTC)
+              }
             }).lean();
             return attendance.map((a)=>a.employeeId.toString())
   })
