@@ -1,4 +1,4 @@
-import { type } from "@testing-library/user-event/dist/cjs/utility/type.js";
+// import { type } from "@testing-library/user-event/dist/cjs/utility/type.js";
 import mongoose from "mongoose";
 
 const attendanceSchema = new mongoose.Schema({
