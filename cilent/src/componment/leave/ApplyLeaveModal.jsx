@@ -1,7 +1,9 @@
-import { CalendarDays, FileText, FileTextIcon, Loader2, Send, X } from "lucide-react";
+import { CalendarDays, FileText, Loader2, Send, X } from "lucide-react";
 import { useState } from "react"
+import api from "../../api/axios";
+import toast from 'react-hot-toast'
 
-const ApplyLeaveModal = ({open, onClose, OnSuccess}) => {
+const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
     const[loading,setLoading] =useState(false);
     const today = new Date();
     const tomorrow = new Date(today)
@@ -9,7 +11,20 @@ const ApplyLeaveModal = ({open, onClose, OnSuccess}) => {
     const minDate = tomorrow.toISOString().split('T')[0];
 
     const handleSubmit = async (e) =>{
-        e,preventDefault();
+        e.preventDefault();
+        setLoading(true)
+        const formData = new FormData(e.currentTarget)
+        const data = Object.fromEntries(formData.entries())
+
+        try{
+            await api.post('/leave',data)
+            onSuccess();
+            onClose();
+        }
+        catch(err){
+            toast.error(err.response?.data?.error || err?.message)
+        }
+
     }
     if(!open) return null
   return (
@@ -32,7 +47,7 @@ const ApplyLeaveModal = ({open, onClose, OnSuccess}) => {
                 <label className="flex items-center gap-2 text-sm
                 font-medium text-slate-700 mb-2">
                     <FileText className="w-4 h-4 text-slate-400"/>
-                    Leave Text
+                    Leave Type
                 </label>
                 <select name='type'required>
                     <option value="SICK">Sick Leave</option>
@@ -54,7 +69,7 @@ const ApplyLeaveModal = ({open, onClose, OnSuccess}) => {
                     </div>
                     <div>
                       <span className="block text-xs text-slate-400 mb-1">To</span>
-                      <input type='date'name="startDate"required min={minDate}/>
+                      <input type='date'name="endDate"required min={minDate}/>
                     </div>
                 </div>
             </div>
@@ -70,7 +85,7 @@ const ApplyLeaveModal = ({open, onClose, OnSuccess}) => {
                 <button onClick={onClose} type="button"className="btn-primary flex-1 flex items-center justify-center gap-2">
                 Cancel
                 </button>
-                 <button onClick={onClose} disabled={loading} type="submit"className="btn-primary flex-1 flex items-center justify-center gap-2">
+                 <button disabled={loading} type="submit"className="btn-primary flex-1 flex items-center justify-center gap-2">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>}
                 {loading ? "Submitting...":"Submit"}
                 </button>

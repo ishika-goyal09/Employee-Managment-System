@@ -1,11 +1,19 @@
 import { PencilIcon, Trash2Icon } from 'lucide-react'
 import React from 'react'
+import toast from 'react-hot-toast';
+import api from "../api/axios";
 
 const EmployeeCard = ({employee,onDelete,onEdit}) => {
 
     const handleDelete = async ()=>{
         if(!confirm("Are you sure you want to delete this employee?"))
             return;
+        try{
+            await api.delete(`/employees/${employee.id}`)
+            onDelete()
+        } catch(err){
+            toast.error(err.response?.data?.error || err.message)
+        }
     }
   return (
     <div className='group relative card card-hover overflow-hidden'>
@@ -26,7 +34,7 @@ const EmployeeCard = ({employee,onDelete,onEdit}) => {
     {employee.isDeleted && <span className='bg-red-500/60 font-medium text-white px-2.5 py-1 text-xs rounded'>DELETED</span>}
 </div>
 {!employee.isDeleted &&(
-    <di className='absolute inset-0 bg-linear-to-t from-indigo-700/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6 gap-3'>
+    <div className='absolute inset-0 bg-linear-to-t from-indigo-700/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6 gap-3'>
         <button onClick={()=>onEdit(employee)}className='p-2.5 bg-white/90 backdrop-blur-sm text-slate-700 hover:text-indigo-600 rounded-xl shadow-lg transition-all hover:scale-105'>
             <PencilIcon className='w-4 h-4'/>
         </button>
@@ -34,7 +42,7 @@ const EmployeeCard = ({employee,onDelete,onEdit}) => {
             <Trash2Icon className='w-4 h-4'/>
         </button>
 
-    </di>
+    </div>
 )}
 
       <div className='p-5'>

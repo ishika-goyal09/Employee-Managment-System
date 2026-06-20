@@ -6,14 +6,14 @@ import Payslip from "../modals/Payslip.js";
 // POST /api/payslips
 export const createPayslip = async (req,res)=>{
  try{
-    const{ employeeId, month, year, basicSalary, allowance,
-        deduction } = req.body;
+    const{ employeeId, month, year, basicSalary, allowances,
+        deductions } = req.body;
 
         if(!employeeId || !month || !year || !basicSalary){
             return res.status(400).json({error:"Missing fields"});
             }
             const netSalary = Number(basicSalary) + Number 
-            (allowance || 0 ) - Number(deduction || 0);
+            (allowances || 0 ) - Number(deductions || 0);
             const payslip = await Payslip.create({
                 employeeId,
                 month:Number(month),

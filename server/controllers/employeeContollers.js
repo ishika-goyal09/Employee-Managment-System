@@ -10,7 +10,7 @@ export const getEmployees = async(req,res)=>{
     const where = {};
     if(department) where.department = department;
 
-    const employees = await Employee.find(where).Sort
+    const employees = await Employee.find(where).sort
     ({createdAt: -1}).populate("userId","email role").lean();
 
     const result = employees.map((emp)=>({
@@ -76,7 +76,7 @@ export const updateEmployees = async(req,res)=>{
    try{
     const {id} = req.params;
     const { firstName, lastName, email, phone, position,
-        department,basicSalary,allowances,deductions,password,role,bio} = req.body;
+        department,basicSalary,allowances,deductions,password,role,bio, employmentStatus,joinDate} = req.body;
          
        const employee = await Employee.findById(id);
        if(!employee) return res.status(404).json({error:"Employee not found"})
@@ -91,7 +91,8 @@ export const updateEmployees = async(req,res)=>{
             basicSalary:Number(basicSalary) || 0,
             allowances:Number(allowances) || 0,
             deductions:Number(deductions) ||0,
-            employeeStatus:employeeStatus || "ACTIVE",
+            employmentStatus:employmentStatus || "ACTIVE",
+            joinDate: new Date(joinDate),
             bio:bio || "",
         })
 
@@ -105,13 +106,13 @@ export const updateEmployees = async(req,res)=>{
         return res.json({success:true})
     }
    catch(error){
+     console.error("Update employee error:", error);
     if(error.code === 11000){
         return res.status(400).json({error:"Email already exists"})
     }
     return res.status(500).json({error:"Failed to update employee"});
    }
 }
-
 //delete employee
 // DELETE / api/employees
 export const deleteEmployees = async(req,res)=>{

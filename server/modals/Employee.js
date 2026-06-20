@@ -51,7 +51,8 @@ const employeeSchema = new mongoose.Schema({
     },
     isDeleted:{
         type:Boolean,
-        required:false
+      //  required:false
+        default:false
     },
     bio:{
         type:String,

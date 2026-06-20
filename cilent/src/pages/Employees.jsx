@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { dummyEmployeeData,DEPARTMENTS } from '../assets/assets'
 import { Plus, Search, X } from 'lucide-react'
 import EmployeeCard from '../componment/EmployeeCard'
 import EmployeeForm from '../componment/EmployeeForm'
+import api from "../api/axios";
 
 const Employees = () => {
   const [employees,setEmployees] = useState([])
@@ -15,18 +16,25 @@ const Employees = () => {
 
 
   const fetchEmployees = useCallback(async ()=>{
-    setLoading(true)
-    setEmployees(dummyEmployeeData.filter((emp)=>(selectedDept ? emp.department === selectedDept : emp)))
-    setTimeout(()=>{
-      setLoading(false)
-    },1000)
+  try{
+    const url = selectedDept ? `/employees?department=${selectedDept}` :
+    "/employees";
+    const res = await api.get(url)
+    setEmployees(res.data)
+  }
+  catch(error){
+    console.error("Failed to fetch employees");
+  }
+  finally{
+    setLoading(false)
+  }
   },[selectedDept])
 
   useEffect(()=>{
 fetchEmployees();
   },[fetchEmployees])
 
-  const filtered = employees.filter((emp)=>`${emp.firstName} ${emp.lasName} ${emp.position}`.toLowerCase().includes(search.toLowerCase()))
+  const filtered = employees.filter((emp)=>`${emp.firstName} ${emp.lastName} ${emp.position}`.toLowerCase().includes(search.toLowerCase()))
   return (
     <div className='animate-fade-in'>
       {/* -----header----- */}
@@ -88,8 +96,8 @@ fetchEmployees();
 </button>
         </div>
         <div className='p-6'>
-        <EmployeeFrom 
-       onSucess={()=>{
+        <EmployeeForm 
+       onSuccess={()=>{
         setShowCreateModal(false);
         fetchEmployees();
        }} onCancel={()=>setShowCreateModal(false)}/>
@@ -113,8 +121,8 @@ fetchEmployees();
 </button>
         </div>
         <div className='p-6'>
-       <EmployeeFrom initialData={editEmployee}
-       onSucess={()=>{
+       <EmployeeForm initialData={editEmployee}
+       onSuccess={()=>{
         setEditEmployee(null);
         fetchEmployees();
        }} onCancel={()=>setEditEmployee(null)}/>
