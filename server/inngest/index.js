@@ -183,9 +183,11 @@ const today = await step.run("get-today-date",()=>{
                 `
             })
         })
+         await Promise.all(emailPromises)
+         return {emailsSent: absentEmployees.length}
     })
  }
- await Promise.all(emailPromises)
+
   return {totalActive: activeEmployees.length,onLeave:
     onLeaveIds.length,checkIn:checkedInIds.length,absent:
     absentEmployees.length}
