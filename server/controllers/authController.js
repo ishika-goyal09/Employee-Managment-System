@@ -33,7 +33,7 @@ export const login = async(req, res)=>{
         role:user.role,
         email:user.email
        }
-       const token = jwt.sign(payload,process.env.jWT_SECRET,
+       const token = jwt.sign(payload,process.env.JWT_SECRET,
         {expiresIn:"10d"});
         return res.json({user:payload,token});
        

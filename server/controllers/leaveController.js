@@ -42,8 +42,14 @@ await inngest.send({
 })
 
 return res.json({success:true,data:leave});
-        } catch (error){
-            return res.status(500).json({error:"Failed"})
+        } 
+        // catch (error){
+        //     return res.status(500).json({error:"Failed"})
+        catch (error) {
+    console.error("Create Leave Error:", error);
+    return res.status(500).json({
+        error: error.message
+    });
 
     }
 }
@@ -59,7 +65,7 @@ export const getLeaves = async(req,res)=>{
         const where = status ? {status} : {};
         const leaves = await leaveApplication.find(where).
         populate("employeeId").sort({createdAt: -1});
-        const data = leave.map((l)=>{
+        const data = leaves.map((l)=>{
             const obj = l.toObject();
             return{
                 ...obj,

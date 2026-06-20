@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DEPARTMENTS } from '../assets/assets'
 import { Loader2Icon } from 'lucide-react'
-
+import toast from 'react-hot-toast'
+import api from "../api/axios";
 
 const EmployeeForm = ({initialData,onSuccess,onCancel}) => {
     const navigate = useNavigate()
@@ -10,7 +11,40 @@ const EmployeeForm = ({initialData,onSuccess,onCancel}) => {
     const isEditMode = !!initialData;
     const handleSubmit = async (e) =>{
         e.preventDefault()
+        setLoading(true)
+        const formData = new FormData(e.currentTarget);
+        if(isEditMode){
+            const pwd = formData.get("password")
+            if(!pwd) formData.delete("password")
+        }
+//     try{
+//         const url = isEditMode ? `/employees/${initialData.id}`:"/employees"
+//    const method = isEditMode ? "put":"post";
+//     } catch (error){
+//        toast.error(error.response?.data?.error || error.message);
+//     }
+//     finally{
+//         setLoading(false);
+//     }
+try {
+    const payload = Object.fromEntries(formData.entries());
+
+    if (isEditMode) {
+        await api.put(`/employees/${initialData.id}`, payload);
+        toast.success("Employee updated successfully");
+    } else {
+        await api.post("/employees", payload);
+        toast.success("Employee created successfully");
     }
+
+    if (onSuccess) onSuccess();
+
+} catch (error) {
+    console.log(error);
+    toast.error(error.response?.data?.error || error.message);
+}
+     }
+
   return (
    <form onSubmit={handleSubmit} className='space-y-6 max-w-3xl animate-fade-in'>
 
@@ -43,7 +77,7 @@ const EmployeeForm = ({initialData,onSuccess,onCancel}) => {
     </div>
             {/* Employment Details */}
 <div className='card p-5 sm:p-6'>
-    <h3 className='text-base font medium text-slate-900 mb-6 pb-4 border-b border-slate-100'>Employment Details</h3>
+    <h3 className='text-base font-medium text-slate-900 mb-6 pb-4 border-b border-slate-100'>Employment Details</h3>
     <div className='grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm text-slate-700'>
         <div>
             <label className='block mb-2'>Department</label>
@@ -66,11 +100,11 @@ const EmployeeForm = ({initialData,onSuccess,onCancel}) => {
             </div>
             <div>
                 <label className='block mb-2'>Allowances</label>
-                <input type='number' name='allowance' min="0" step="0.01"required defaultValue={initialData?.allowances || 0} />
+                <input type='number' name='allowances' min="0" step="0.01"required defaultValue={initialData?.allowances || 0} />
             </div>
              <div>
                 <label className='block mb-2'>Deductions</label>
-                <input type='number' name='deduction' min="0" step="0.01"required defaultValue={initialData?.deductions || 0} />
+                <input type='number' name='deductions' min="0" step="0.01"required defaultValue={initialData?.deductions || 0} />
             </div>
             {isEditMode &&(
                 <div>
@@ -124,7 +158,7 @@ const EmployeeForm = ({initialData,onSuccess,onCancel}) => {
                 (onCancel ? onCancel() : navigate(-1))}>
              Cancel
             </button>
-            <button type='submit' disabled={loading} className='btn-primary' flex items-center justify-center>
+            <button type='submit' disabled={loading} className='btn-primary flex items-center justify-center'>
                 {loading && <Loader2Icon className ="w-4 h-4 mr-2 animate-spin"/>}
                 {isEditMode ? "Update Employee" : "Create Employee"}
             </button>

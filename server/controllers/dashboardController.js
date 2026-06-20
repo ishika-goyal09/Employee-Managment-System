@@ -16,7 +16,7 @@ export const getDashboard = async(req,res)=>{
                 Attendance.countDocuments({
                     date:{
                         $gte:new Date(new Date().setHours(0,0,0,0)),
-                        $li:new Date(new Date().setHours(0,0,0,0)),
+                        $lt:new Date(new Date().setHours(0,0,0,0)),
                     }
                 }),
                 leaveApplication.countDocuments({status:"PENDING"})
@@ -25,7 +25,7 @@ export const getDashboard = async(req,res)=>{
                 role:"ADMIN",
                 totalEmployees,
                 totalDepartments:DEPARTMENTS.length,
-                todayAttendance,
+                totalAttendance,
                 pendingLeaves
             })
         } else{
@@ -48,7 +48,7 @@ export const getDashboard = async(req,res)=>{
                         status:"PENDING",
                     }),
                     Payslip.findOne({ employee:employee._id}).sort({
-                        createAt: -1 }).lean(),
+                        createdAt: -1 }).lean(),
                 ])
                 return res.json({
                     role:"EMPLOYEE",

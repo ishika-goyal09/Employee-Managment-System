@@ -1,22 +1,36 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import  { useCallback, useEffect, useState } from 'react'
 import Loading from "../componment/Loading"
 import {dummyLeaveData } from '../assets/assets'
-import { Palmtree, PalmtreeIcon, PlusIcon, ThermometerIcon, UmbrellaIcon } from 'lucide-react'
+import { PalmtreeIcon, PlusIcon, ThermometerIcon, UmbrellaIcon } from 'lucide-react'
 import LeaveHistory from '../componment/leave/LeaveHistory'
 import ApplyLeaveModal from '../componment/leave/ApplyLeaveModal'
+import { useAuth } from '../context/AuthContext'
+import toast from 'react-hot-toast'
+import api from "../api/axios";
 
 const Leave = () => {
+  const {user} = useAuth()
   const [leaves,setLeaves]=useState([])
   const[loading, setLoading] = useState(true)
   const[showModal,setShowModal] = useState(false)
   const[isDeleted,setIsDeletd] = useState(false);
-  const isAdmin = false;
+  //const isAdmin = false;
+  const isAdmin = user?.role === "ADMIN";
 
-  const fetchLeaves = useCallback(()=>{
-    setLeaves(dummyLeaveData)
-    setTimeout(()=>{
-      setLoading(false);
-    },1000)
+  const fetchLeaves = useCallback(async()=>{
+    // setLeaves(dummyLeaveData)
+    // setTimeout(()=>{
+    //   setLoading(false);
+    // },1000);
+  try{
+    const res = await api.get('/leave');
+    setLeaves(res.data.data || [])
+    if(res.data.employee?.isDeleted) setIsDeletd(true)
+  } catch(error){
+toast.error(error?.response?.data?.error || error.message)
+}finally{
+  setLoading(false)
+}
   },[])
 
   useEffect(()=>{
@@ -28,7 +42,7 @@ const Leave = () => {
   const approvedLeaves = leaves.filter((l)=>l.status === "APPROVED");
   const sickCount = approvedLeaves.filter((l)=>l.type === "SICK").length;
   const casualCount = approvedLeaves.filter((l)=>l.type === "CASUAL").length;
- const annualCount = approvedLeaves.filter((l)=>l.status === "ANNUAL").length;
+ const annualCount = approvedLeaves.filter((l)=>l.type === "ANNUAL").length;
 
   const leaveStats = [
     {label:"Sick Leave",value:sickCount,icon:ThermometerIcon},
@@ -42,7 +56,7 @@ const Leave = () => {
           <h1 className='page-title'>Leave Management</h1>
           <p className='page-subtitle'>{isAdmin ? "Manage leave application" : "Your leave history and request"}</p>
         </div>
-        {!isAdmin && !isDeleted &&(
+        {!isAdmin  && !isDeleted &&  (
           <button onClick={()=>setShowModal(true)} className='btn-primary flex items-center gap-2 w-full sm:w-auto justify-center'>
             <PlusIcon className='w-4 h-4'/> Apply for Leave
           </button>
